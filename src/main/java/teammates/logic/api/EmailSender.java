@@ -4,16 +4,11 @@ import org.apache.http.HttpStatus;
 
 import teammates.common.datatransfer.logs.EmailSentLogDetails;
 import teammates.common.exception.EmailSendingException;
-import teammates.common.util.Config;
 import teammates.common.util.Const;
 import teammates.common.util.EmailSendingStatus;
 import teammates.common.util.EmailWrapper;
 import teammates.common.util.Logger;
-import teammates.logic.external.EmailSenderService;
-import teammates.logic.external.EmptyEmailService;
-import teammates.logic.external.MailgunService;
-import teammates.logic.external.MailjetService;
-import teammates.logic.external.SendgridService;
+import teammates.logic.external.*;
 
 /**
  * Handles operations related to sending emails.
@@ -26,19 +21,7 @@ public class EmailSender {
     private final EmailSenderService service;
 
     EmailSender() {
-        if (Config.IS_DEV_SERVER) {
-            service = new EmptyEmailService();
-        } else {
-            if (Config.isUsingSendgrid()) {
-                service = new SendgridService();
-            } else if (Config.isUsingMailgun()) {
-                service = new MailgunService();
-            } else if (Config.isUsingMailjet()) {
-                service = new MailjetService();
-            } else {
-                service = new EmptyEmailService();
-            }
-        }
+        service = new SESService();
     }
 
     public static EmailSender inst() {
